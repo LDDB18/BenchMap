@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>BenchMap</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="{% static 'application/css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="{% static 'application/css/style.css' %}" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body>
+  <nav class="light-blue lighten-1" role="navigation">
+    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">BenchMap</a>
+      <!--<ul class="right hide-on-med-and-down">
+        <li><a href="#">Navbar Link</a></li>
+      </ul>
+
+      <ul id="nav-mobile" class="sidenav">
+        <li><a href="#">Navbar Link</a></li>
+      </ul>
+      <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>-->
+    </div>
+  </nav>
+  <div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+      <br><br>
+      <h1 class="header center orange-text">BenchMap</h1>
+      <div class="row center">
+        <h5 class="header col s12 light">Discover top-rated benches around you </h5>
+        <p class="header col s12 light">Sit like a king <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="20" height="20"><path d="M10 4.92l4.52 5.64 4.51-5.64-1.13 10.16H2.1L.97 4.92l4.51 5.64L10 4.92z" fill="#ff0" fill-rule="evenodd" stroke="#000" stroke-width=".6774"/></svg> anywhere !</p>
+        <img src="{% static 'application/img/map_example.png' %}">
+      </div>
+      <div class="row center">
+        <a href="{% url 'application:map' %}" id="download-button" class="btn-large waves-effect waves-light orange">Go to the Map</a>
+      </div>
+      <br><br>
+
+    </div>
+  </div>
+
+
+  <div class="container">
+    <div class="section">
+
+      <!--   Icon Section   -->
+      <div class="row center"><h5 class="header col s12 light" style="text-decoration: underline;">Legend</h5></div>
+      <div class="row">
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center"><img src="{% static 'application/img/bench.png' %}"></h2>
+            <h5 class="center light-blue-text">Bench</h5>
+
+            <p class="light center">Click on any existing bench of the map to give your rating.</p>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center"><img src="{% static 'application/img/bench_gold.png' %}"></h2>
+            <h5 class="center light-blue-text">Top rated bench</h5>
+
+            <p class="light center">This is a top-rated bench !</p>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center"><svg xmlns="http://www.w3.org/2000/svg"  width="60" height="60" fill="currentColor" viewBox="0 0 480 480"><path d="M403.49 342.69l-36.27-50.18h-22.8v-55.05h40.46v-74.4H344.4V146.6H327.6v16.46H88.9V146.6H72.07v16.46H31.6v74.4h40.47v55.05h-22.8L13 342.7v13.82h27.2v63.38h16.82v-63.38h15.06v36.68h16.81V356.5H327.6v36.68h16.81V356.5h15.06v63.38h16.81v-63.38h27.21V342.7zM88.89 292.5v-55.05H327.6v55.05H88.9z"/><path stroke="#000" stroke-width="22" fill="none" d="M381 42v90M426 87h-90"/></svg></h2>
+            <h5 class="center light-blue-text">Add a bench</h5>
+
+            <p class="light">Click to the icon to add a new bench to the map with your rating and save it.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <br><br>
+  </div>
+
+  <footer class="page-footer orange">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+          <h5 class="white-text">BenchMap</h5>
+          <p class="grey-text text-lighten-4">Project by Benjamin DUQUESNOY (<a class="white-text" href="https://github.com/LDDB18">Github</a>). Thank you for your visit.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="{% static 'application/js/materialize.js' %}"></script>
+  <script src="{% static 'application/js/init.js' %}"></script>
+
+  </body>
+</html>

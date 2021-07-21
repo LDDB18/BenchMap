@@ -1,0 +1,301 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css" />
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.74.0/dist/L.Control.Locate.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+       <style type="text/css">
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+            width: 100vw;
+        }
+
+	    .pin {
+	        padding: 7px;
+	        background-color: #fff;
+	        position: absolute;
+	        left: 13px;
+	        top: 130px;
+	        border-radius: 2px;
+
+	    }
+
+	    .leaflet-popup-content {
+                width: 180px;
+                justify-content: center;
+            }
+
+        .leaflet-bar button {
+        height: 46px; /* easyButton's height default */
+        width: 46px;  /*  easyButton's width default */
+        }
+
+
+          .rating {
+          display: inline-block;
+          position: relative;
+          height: 30px;
+          line-height: 30px;
+          font-size: 30px;
+        }
+
+        .rating label {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          cursor: pointer;
+        }
+
+        .rating label:last-child {
+          position: static;
+        }
+
+        .rating label:nth-child(1) {
+          z-index: 5;
+        }
+
+        .rating label:nth-child(2) {
+          z-index: 4;
+        }
+
+        .rating label:nth-child(3) {
+          z-index: 3;
+        }
+
+        .rating label:nth-child(4) {
+          z-index: 2;
+        }
+
+        .rating label:nth-child(5) {
+          z-index: 1;
+        }
+
+        .rating label input {
+          position: absolute;
+          top: 0;
+          left: 0;
+          opacity: 0;
+        }
+
+        .rating label .icon {
+          float: left;
+          color: transparent;
+        }
+
+        .rating label:last-child .icon {
+          color: #000;
+        }
+
+        .rating:not(:hover) label input:checked ~ .icon,
+        .rating:hover label:hover input ~ .icon {
+          color: #fcba03;
+        }
+
+        .rating label input:focus:not(:checked) ~ .icon:last-child {
+          color: #000;
+          text-shadow: 0 0 5px #fcba03;
+        }
+    </style>
+    <title>BenchMap</title>
+</head>
+<body>
+{% if bench_list %}
+    <script type="text/javascript"> //Script for form with stars
+        $(':radio').change(function() {
+          console.log('New star rating: ' + this.value);
+        });
+    </script>
+
+	    <!-- Here the map will be displayed -->
+    <div id="map">
+    <!-- Map coordinate  -->
+        <div class="leaflet-control map-coordinate">
+            <div class="coordinate"></div>
+        </div>
+
+        <div class="leaflet-control pin leaflet-prevent">
+            <svg xmlns="http://www.w3.org/2000/svg"  width="16" height="16" fill="currentColor" viewBox="0 0 480 480"><path d="M403.49 342.69l-36.27-50.18h-22.8v-55.05h40.46v-74.4H344.4V146.6H327.6v16.46H88.9V146.6H72.07v16.46H31.6v74.4h40.47v55.05h-22.8L13 342.7v13.82h27.2v63.38h16.82v-63.38h15.06v36.68h16.81V356.5H327.6v36.68h16.81V356.5h15.06v63.38h16.81v-63.38h27.21V342.7zM88.89 292.5v-55.05H327.6v55.05H88.9z"/><path stroke="#000" stroke-width="22" fill="none" d="M381 42v90M426 87h-90"/></svg>
+        </div>
+
+    </div>
+
+    <!-- Javascript Files -->
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script type='text/javascript' src='https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js'></script>
+        <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.74.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+        <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+        <script type="text/javascript">
+
+	    {% if long_view and lat_view %}
+	    var lat = {{lat_view}};
+	    var lon = {{long_view}};
+	    var zoom = 15;
+	    {% else %} // We initialise the lat and long of Paris (center of the map)
+	    var lat = 48.852969;
+	    var lon = 2.349903;
+	    var zoom = 6;
+	    {% endif %}
+	    var map = null;
+            var markerClusters; // For storing MarkerClusters
+	    // Fonction d'initialisation de la carte
+            function initMap() {
+                // We define the folder that contains the Markers
+                var iconBase = 'http://localhost/carte/icons/';
+		// Create the object "Map" and insert into HTML element which ha s ID "map"
+                map = L.map('map').setView([lat, lon], zoom);
+                markerClusters = L.markerClusterGroup(); // Initialise the Group of Markers
+                L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                    attribution: 'données © <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+                    minZoom: 1,
+                    maxZoom: 20
+                }).addTo(map);
+
+
+
+                // Browsing all the bench from the database
+                {% for bench in bench_list %}
+	            // Defining the icon used by the marker
+                    var myIcon = L.icon({
+                        {% if bench.average_rating > 4.0 %} // Special icon for top-rated bench
+                        iconUrl: "{% static 'application/img/bench_gold.png' %}",
+                        {% else %}
+                        iconUrl: "{% static 'application/img/bench.png' %}",
+                        {% endif %}
+                        iconSize: [50, 50],
+                        iconAnchor: [25, 50],
+                        popupAnchor: [0, -42],
+                    });
+                    var marker = L.marker([{{bench.lat}}, {{bench.long}}], { icon: myIcon }); // no addTo(map), the display is managed by the Marker CLusters
+                    var popup = `Rating : {{bench.average_rating}}
+                               <form action="{% url 'application:vote' bench.id %}" method="post">
+                              {% csrf_token %}
+                              <div class="rating">
+                              <label>
+                                <input type="radio" name="vote" value="1" />
+                                <span class="icon">★</span>
+                              </label>
+                              <label>
+                                <input type="radio" name="vote" value="2" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                              </label>
+                              <label>
+                                <input type="radio" name="vote" value="3" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                              </label>
+                              <label>
+                                <input type="radio" name="vote" value="4" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                              </label>
+                              <label>
+                                <input type="radio" name="vote" value="5" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                              </label>
+                              </div>
+                            <div><input type="submit" value="Vote"></div>
+                          </form>`;
+                    marker.bindPopup(popup);
+                    markerClusters.addLayer(marker); // Nous ajoutons le marqueur aux groupes
+                {% endfor %}
+                map.addLayer(markerClusters);
+
+               L.control.locate().addTo(map);
+
+
+            // Adding a new bench on the map and save it
+            $('.leaflet-prevent').on('click', L.DomEvent.stopPropagation); // enable the add of bench by clicking on icon
+            var mapPinToggler = true;
+            $('.pin').on('click', function(){
+                if(mapPinToggler){
+                map.on('click', function(e){
+                    var lat = e.latlng.lat;
+                    var long = e.latlng.lng;
+                    var popup = `Add a bench
+                              <form action="{% url 'application:map'%}" method="post">
+                              {% csrf_token %}
+                              <div class="rating">
+                              <label>
+                                <input type="radio" name="vote" value="1" />
+                                <span class="icon">★</span>
+                              </label>
+                              <label>
+                                <input type="radio" name="vote" value="2" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                              </label>
+                              <label>
+                                <input type="radio" name="vote" value="3" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                              </label>
+                              <label>
+                                <input type="radio" name="vote" value="4" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                              </label>
+                              <label>
+                                <input type="radio" name="vote" value="5" />
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                                <span class="icon">★</span>
+                              </label>
+                              </div>
+                              <input type="hidden" name="lat" value="${lat}">
+                              <input type="hidden" name="long" value ="${long}">
+                            <div><input type="submit" value="Add"></div>
+                          </form>`;
+                    var myIcon = L.icon({
+                        iconUrl: "{% static 'application/img/bench.png' %}",
+                        iconSize: [50, 50],
+                        iconAnchor: [25, 50],
+                        popupAnchor: [0, -42],
+                    });
+                    var marker = L.marker([e.latlng.lat, e.latlng.lng], { icon: myIcon, opacity: 0.5}).bindPopup(popup);
+                    marker.addTo(map)
+                    marker.openPopup();
+                })
+                mapPinToggler = !mapPinToggler;
+            }else {
+                map.off('click')
+            }
+            })
+
+
+            }
+	    window.onload = function(){
+		// Initialisation function when DOM is loaded
+		initMap();
+	    };
+
+	</script>
+{% endif %}
+</body>
+</html>
