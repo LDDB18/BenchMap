@@ -1,4 +1,4 @@
-Welcome to BenchMapp !
+Welcome to BenchMap !
 
 A demo is available here : https://benchmapapp.herokuapp.com/
 
@@ -13,7 +13,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bench',
         'USER': 'postgres',
-        'PASSWORD': 'azerty',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '',
     }
